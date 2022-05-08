@@ -1,10 +1,8 @@
-import type {GetStaticPropsContext, NextPage, PreviewData} from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import BlogLayout from "../components/layout";
 import {useEffect, useState} from "react";
 import Loading from "../components/loading";
-import {ParsedUrlQuery} from "querystring";
 import {Meals} from "../types";
 import Image from "next/image";
 import {MEALS_URL} from "../lib/config";
@@ -13,7 +11,7 @@ type PropsIndex = {
 	items: Meals[]
 }
 
-export async function getStaticProps(context: GetStaticPropsContext<ParsedUrlQuery,PreviewData>) {
+export async function getServerSideProps() {
 	const request = await fetch(MEALS_URL)
 	const items: { meals: Meals[] } = await request.json()
 

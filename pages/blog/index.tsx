@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { GetStaticPropsContext, PreviewData } from "next";
-import { ParsedUrlQuery } from "querystring";
 import Link from "next/link";
 import Image from "next/image";
 import { NotionDatabaseResponse, NotionProperty } from "../../types";
@@ -8,9 +6,7 @@ import Loading from '../../components/loading';
 import BlogLayout from "../../components/layout";
 import {BLOG_LIST} from "../../lib/config";
 
-export async function getStaticProps(
-  context: GetStaticPropsContext
-) {
+export async function getServerSideProps() {
   let resp = await fetch(BLOG_LIST);
   let json: NotionDatabaseResponse = await resp.json();
 
