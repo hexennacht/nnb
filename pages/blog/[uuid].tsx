@@ -1,7 +1,7 @@
 import {GetServerSideProps} from 'next';
 import Head from "next/head";
 import { ParsedUrlQuery } from 'querystring';
-import { useState, useEffect } from 'react';
+import {useState, useEffect, useMemo} from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 import Loading from "../../components/loading";
@@ -42,18 +42,22 @@ export async function getServerSideProps(context: GetServerSideProps<ParsedUrlQu
 
     const blok_id = Object.keys(results.block)
 
+    const title = getBlockTitle(results?.block?.[blok_id[0]]?.value, results)
+    const cover = results.block?.[blok_id[0]]?.value?.format?.page_cover?.startsWith("https://") ? results.block?.[blok_id[0]]?.value?.format?.page_cover : `https://www.notion.so${results.block[blok_id[0]].value.format.page_cover}`
     return {
         props: {
-            title: getBlockTitle(results?.block?.[blok_id[0]]?.value, results),
+            title: title,
             blog: results,
-            cover: results.block[blok_id[0]].value.format.page_cover.startsWith("https://") ? results.block[blok_id[0]].value.format.page_cover : `https://www.notion.so${results.block[blok_id[0]].value.format.page_cover}`
+            cover: cover
         }
     }
 }
 
+
+
 export default function BlogDetail({blog, title, cover}: BlogDetailProps) {
     const [loading, setLoading] = useState<boolean>(false)
-    const [record, setRecord] = useState<null | ExtendedRecordMap>(null)
+    const [record, setRecord] = useState<undefined | ExtendedRecordMap>(undefined)
 
     useEffect(() => {
         setRecord(blog)
@@ -64,7 +68,7 @@ export default function BlogDetail({blog, title, cover}: BlogDetailProps) {
         <>
             <BlogLayout>
                 {
-                    loading ?
+                    loading && !record ?
                         <Loading /> :
                     <>
                         <Head>
@@ -85,17 +89,14 @@ export default function BlogDetail({blog, title, cover}: BlogDetailProps) {
                         </div>
                         <div className={`w-[720px] mx-auto border border-dashed`}>
                             <div>
-                                <Image src={ cover! } layout={`raw`} width={`720px`} height={`100px`} ></Image>
+                                <Image src={ cover! } layout={`raw`} width={`720px`} height={`100px`} alt={title} />
                             </div>
                             <NotionRenderer
                                 recordMap={record!}
                                 components={{
+                                    nextImage: Image,
                                     nextLink: Link,
                                     Code,
-                                    Collection,
-                                    Modal,
-                                    Equation,
-                                    Pdf
                                 }}
                                 previewImages={!!blog.preview_images}
                                 mapImageUrl={defaultMapImageUrl}
