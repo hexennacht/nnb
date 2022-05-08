@@ -6,12 +6,12 @@ import Image from "next/image";
 import { NotionDatabaseResponse, NotionProperty } from "../../types";
 import Loading from '../../components/loading';
 import BlogLayout from "../../components/layout";
+import {BLOG_LIST} from "../../lib/config";
 
 export async function getStaticProps(
   context: GetStaticPropsContext
 ) {
-  const url = `${process.env.BASE_API_URL}/blog/list`
-  let resp = await fetch(url);
+  let resp = await fetch(BLOG_LIST);
   let json: NotionDatabaseResponse = await resp.json();
 
   return {

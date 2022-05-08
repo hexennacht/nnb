@@ -7,14 +7,14 @@ import Loading from "../components/loading";
 import {ParsedUrlQuery} from "querystring";
 import {Meals} from "../types";
 import Image from "next/image";
+import {MEALS_URL} from "../lib/config";
 
 type PropsIndex = {
 	items: Meals[]
 }
 
 export async function getStaticProps(context: GetStaticPropsContext<ParsedUrlQuery,PreviewData>) {
-	const url = 'https://www.themealdb.com/api/json/v1/1/filter.php?c=Seafood'
-	const request = await fetch(url)
+	const request = await fetch(MEALS_URL)
 	const items: { meals: Meals[] } = await request.json()
 
 	return {

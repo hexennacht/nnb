@@ -24,6 +24,7 @@ import 'prismjs/themes/prism-tomorrow.css'
 // used for rendering equations (optional)
 import 'katex/dist/katex.min.css'
 import {getBlockTitle} from "notion-utils";
+import {BLOG_DETAIL} from "../../lib/config";
 
 
 type BlogDetailProps = {
@@ -35,9 +36,8 @@ type BlogDetailProps = {
 export async function getServerSideProps(context: GetServerSideProps<ParsedUrlQuery>) {
     //@ts-ignore
     const uuid: string = context?.params?.uuid?.toString()?.split("-").splice(0, 5).join("-")!
-    const url = `/api/blog/${uuid}`
 
-    const resp = await fetch(url)
+    const resp = await fetch(BLOG_DETAIL(uuid))
     const results = await resp.json()
 
     const blok_id = Object.keys(results.block)
