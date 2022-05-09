@@ -1,14 +1,20 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { NotionDatabaseResponse, NotionProperty } from "../../types";
 import Loading from '../../components/loading';
 import BlogLayout from "../../components/layout";
 import {BLOG_LIST} from "../../lib/config";
+import {GetServerSidePropsContext} from "next";
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   let resp = await fetch(BLOG_LIST);
   let json: NotionDatabaseResponse = await resp.json();
+
+  context.res.setHeader(
+      'Cache-Control',
+      'public, max-age=31536000, immutable'
+  )
 
   return {
     props: {

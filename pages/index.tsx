@@ -6,14 +6,20 @@ import Loading from "../components/loading";
 import {Meals} from "../types";
 import Image from "next/image";
 import {MEALS_URL} from "../lib/config";
+import {GetServerSidePropsContext} from "next";
 
 type PropsIndex = {
 	items: Meals[]
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
 	const request = await fetch(MEALS_URL)
 	const items: { meals: Meals[] } = await request.json()
+
+	context.res.setHeader(
+		'Cache-Control',
+		'public, max-age=31536000, immutable'
+	)
 
 	return {
 		props: {
