@@ -4,7 +4,7 @@ import Image from "next/image";
 import { NotionDatabaseResponse, NotionProperty } from "../../types";
 import Loading from '../../components/loading';
 import BlogLayout from "../../components/layout";
-import {BLOG_LIST} from "../../lib/config";
+import {BLOG_LIST, DEFAULT_KEYWORDS, DEFAULT_TITLE} from "../../lib/config";
 import {GetServerSidePropsContext} from "next";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -68,7 +68,7 @@ export default function Index({ items }: BlogIndexProps) {
   };
   return (
     <>
-      <BlogLayout>
+      <BlogLayout title={DEFAULT_TITLE} keywords={DEFAULT_KEYWORDS}>
 	  <div className={"flex-grow w-1/2 mx-auto text-center"}>
         <h1 className={`text-3xl font-extralight text-gray-700 w-1/2 mx-auto`}>
           Journey on learning to write great tutorials and articles
