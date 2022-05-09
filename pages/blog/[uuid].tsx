@@ -20,7 +20,7 @@ import 'prismjs/themes/prism-tomorrow.css'
 // used for rendering equations (optional)
 import 'katex/dist/katex.min.css'
 
-import {BLOG_DETAIL} from "../../lib/config";
+import {BLOG_DETAIL, DEFAULT_KEYWORDS, DEFAULT_TITLE} from "../../lib/config";
 
 
 type BlogDetailProps = {
@@ -68,15 +68,11 @@ export default function BlogDetail({blog, title, cover}: BlogDetailProps) {
 
     return (
         <>
-            <BlogLayout>
+            <BlogLayout title={title ? title : DEFAULT_TITLE} keywords={`${DEFAULT_KEYWORDS}, ${title}`}>
                 {
                     loading && !blogs ?
                         <Loading /> :
                     <>
-                        <Head>
-                            <title>{title}</title>
-                            <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-                        </Head>
                         <div className={`w-[720px] mx-auto mb-3`}>
                             <h1 className={`mx-auto mb-5 text-center items-center text-4xl text-gray-700 font-light`}>{title}</h1>
                             <Link href={`/blog`}>
