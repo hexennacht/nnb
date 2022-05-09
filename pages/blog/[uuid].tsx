@@ -1,19 +1,15 @@
-import {GetServerSideProps} from 'next';
+import {GetServerSidePropsContext} from 'next';
 import Head from "next/head";
-import { ParsedUrlQuery } from 'querystring';
 import {useState, useEffect, useMemo} from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 import Loading from "../../components/loading";
 import BlogLayout from "../../components/layout";
 
-import {ExtendedRecordMap, PageBlock} from "notion-types"
+import {getBlockTitle} from "notion-utils";
+import {ExtendedRecordMap} from "notion-types"
 import {defaultMapImageUrl, NotionRenderer} from "react-notion-x"
 import { Code } from 'react-notion-x/build/third-party/code'
-import { Collection } from 'react-notion-x/build/third-party/collection'
-import { Equation } from 'react-notion-x/build/third-party/equation'
-import { Modal } from 'react-notion-x/build/third-party/modal'
-import { Pdf } from 'react-notion-x/build/third-party/pdf'
 
 // core styles shared by all of react-notion-x (required)
 import 'react-notion-x/src/styles.css'
@@ -23,7 +19,7 @@ import 'prismjs/themes/prism-tomorrow.css'
 
 // used for rendering equations (optional)
 import 'katex/dist/katex.min.css'
-import {getBlockTitle} from "notion-utils";
+
 import {BLOG_DETAIL} from "../../lib/config";
 
 
@@ -33,7 +29,7 @@ type BlogDetailProps = {
     title?: string
 }
 
-export async function getServerSideProps(context: GetServerSideProps<ParsedUrlQuery>) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
     //@ts-ignore
     const uuid: string = context?.params?.uuid?.toString()?.split("-").splice(0, 5).join("-")!
 
@@ -44,6 +40,12 @@ export async function getServerSideProps(context: GetServerSideProps<ParsedUrlQu
 
     const title = getBlockTitle(results?.block?.[blok_id[0]]?.value, results)
     const cover = results.block?.[blok_id[0]]?.value?.format?.page_cover?.startsWith("https://") ? results.block?.[blok_id[0]]?.value?.format?.page_cover : `https://www.notion.so${results.block[blok_id[0]].value.format.page_cover}`
+
+    context.res.setHeader(
+        'Cache-Control',
+        'public, max-age=31536000, immutable'
+    )
+
     return {
         props: {
             title: title,
@@ -56,19 +58,19 @@ export async function getServerSideProps(context: GetServerSideProps<ParsedUrlQu
 
 
 export default function BlogDetail({blog, title, cover}: BlogDetailProps) {
-    const [loading, setLoading] = useState<boolean>(false)
-    const [record, setRecord] = useState<undefined | ExtendedRecordMap>(undefined)
+    const [loading, setLoading] = useState<boolean>(true)
+    const [blogs, setBlogs] = useState<undefined | ExtendedRecordMap>(undefined)
 
     useEffect(() => {
-        setRecord(blog)
+        setBlogs(blog)
         setLoading(false)
-    }, [loading])
+    }, [loading, blogs]);
 
     return (
         <>
             <BlogLayout>
                 {
-                    loading && !record ?
+                    loading && !blogs ?
                         <Loading /> :
                     <>
                         <Head>
@@ -92,7 +94,7 @@ export default function BlogDetail({blog, title, cover}: BlogDetailProps) {
                                 <Image src={ cover! } layout={`raw`} width={`720px`} height={`100px`} alt={title} />
                             </div>
                             <NotionRenderer
-                                recordMap={record!}
+                                recordMap={blogs!}
                                 components={{
                                     nextImage: Image,
                                     nextLink: Link,
